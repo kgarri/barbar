@@ -1,0 +1,15 @@
+[package]
+name = "barbar"
+version = "0.1.0"
+edition = "2021"
+[env]
+OUT_DIR = "barbar"
+[[bin]]
+name="main"
+path = "src/main.rs"
+[dependencies]
+async-channel = "2.3.1"
+gtk = { version = "0.9.5", package = "gtk4", features = ["v4_16"] }
+
+[build-dependencies]
+glib-build-tools = "0.20.0"
