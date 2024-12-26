@@ -1,6 +1,7 @@
 mod custom_button;
 mod todo_window;
 mod task_list;
+mod task_row;
 
 
 use gtk::prelude::*; 

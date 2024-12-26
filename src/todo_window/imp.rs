@@ -38,6 +38,9 @@ impl ObjectImpl for Window {
         self.parent_constructed();
 
         let obj = self.obj();
+        obj.setup_tasks(); 
+        obj.setup_callbacks();
+        obj.setup_factory();
     }
 }
 
