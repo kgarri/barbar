@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <template class="BarBar" parent="GtkApplicationWindow">
+        <property name="title" translatable="yes">BarBar</property>
+        <child>
+            <object class="GtkBox">
+                <property name="orientation">horizontal</property>
+                <child>
+                    <object class="GtkLabel" id="label">
+                        <property name="label" translatable="yes">Hello World</property>
+                        <property name="max-width-chars">14</property>
+                        </object>
+                    </child>
+                </object>
+            </child>
+        </template>
+    </interface>
+
