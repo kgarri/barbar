@@ -1,13 +1,15 @@
 mod imp;
-use gtk::prelude::{Cast, CastNone, EntryBufferExtManual, EntryExt, ListItemExt};
+use gtk::prelude::{ActionMapExt, Cast, CastNone, EntryBufferExtManual, EntryExt, ListItemExt, ListModelExt, SettingsExt, SettingsExtManual};
 use gtk::subclass::prelude::ObjectSubclassIsExt;
-use gtk::{glib, Application, ListItem, NoSelection, SignalListItemFactory};
+use gtk::{glib, Application, CustomFilter, FilterListModel, ListItem, NoSelection, SignalListItemFactory};
 use glib::Object; 
 use glib::clone;
-use gtk::gio;
+use gtk::gio::{self, Settings};
 
-use crate::task_list::TaskObject;
+use crate::task_list::{TaskData, TaskObject};
 use crate::task_row::TaskRow;
+use crate::utils::data_path;
+use crate::APP_ID;
 
 glib::wrapper! {
     pub struct Window(ObjectSubclass<imp::Window>)
@@ -29,13 +31,55 @@ impl Window {
         .expect("Could not get current tasks.")
     }
 
+    fn filter(&self) -> Option<CustomFilter> {
+        let filter_state: String = self.settings().get("filter");
+
+        let filter_open = CustomFilter::new(|obj| {
+            let task_object = obj
+                .downcast_ref::<TaskObject>()
+                .expect("The object needs to be of type `TaskObject`.");
+            !task_object.is_completed()
+        });
+
+        let filter_done = CustomFilter::new(|obj| {
+            let task_object = obj
+                .downcast_ref::<TaskObject>()
+                .expect("The object needs to be of type `TaskObject`.");
+
+            task_object.is_completed()
+        });
+
+        match filter_state.as_str() {
+            "All" => None,
+            "Open" => Some(filter_open),
+            "Done" => Some(filter_done),
+            _ => unreachable!(),
+        } 
+
+    }
+
+
     fn setup_tasks(&self) {
         let model = gio::ListStore::new::<TaskObject>();
 
         self.imp().tasks.replace(Some(model));
-
-        let selection_model = NoSelection::new(Some(self.tasks()));
+        
+        let filter_model = FilterListModel::new(Some(self.tasks()), self.filter());
+        let selection_model = NoSelection::new(Some(filter_model.clone()));
         self.imp().tasks_list.set_model(Some(&selection_model));
+
+        self.settings().connect_changed(
+            Some("filter"), 
+            clone!(
+            #[weak(rename_to = window)]
+            self,
+            #[weak]
+            filter_model, 
+            move |_,_| {
+                    filter_model.set_filter(window.filter().as_ref());
+                }
+            ),
+        );
     }
 
     fn new_task(&self) {
@@ -106,6 +150,56 @@ impl Window {
         self.imp().tasks_list.set_factory(Some(&factory));
     }
 
+    fn setup_settings(&self) {
+        let settings = Settings::new(APP_ID);
+        self.imp()
+            .settings
+            .set(settings)
+            .expect("`settings` should not be set before calling `setup_settings`.");
+    }
+
+    fn settings(&self) -> &Settings {
+        self.imp()
+            .settings
+            .get()
+            .expect("`settings` should be set in `setup_settings`.")
+    }
+
+    fn setup_actions(&self) {
+        let action_filter = self.settings().create_action("filter");
+        self.add_action(&action_filter);
+    }
+
+    fn remove_done_tasks(&self) {
+        let tasks = self.tasks();
+        let mut position = 0; 
+        while let Some(item) = tasks.item(position) {
+            let task_object = item
+                .downcast_ref::<TaskObject>()
+                .expect("The object needs to be of type `TaskObject`.");
+
+            if task_object.is_completed() {
+                tasks.remove(position)
+            } else {
+                position += 1;
+            }
+        }
+    }
+
+
+    fn restore_data(&self) {
+        if let Ok(file) = std::fs::File::open(data_path()) {
+            let backup_data:Vec<TaskData> = serde_json::from_reader(file).expect(
+                "It Should be possible to read `backup_data` from the json file.",);
+            
+            let task_objects: Vec<TaskObject> = backup_data
+                .into_iter()
+                .map(TaskObject::from_task_data)
+                .collect();
+            self.tasks().extend_from_slice(&task_objects);
+        }
+    }
 }
+
 
 

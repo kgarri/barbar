@@ -5,11 +5,7 @@ use gtk::subclass::prelude::*;
 use gtk::prelude::*;
 use glib::Properties;
 
-#[derive(Default)]
-pub struct TaskData {
-    pub completed: bool,
-    pub content: String, 
-}
+use super::TaskData;
 
 
 #[derive(Properties, Default)]
