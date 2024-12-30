@@ -9,6 +9,15 @@
                     <object class="GtkLabel" id="label">
                         <property name="label" translatable="yes">Hello World</property>
                         <property name="max-width-chars">14</property>
+                        <property name="margin-start">12</property>
+                        </object>
+                    </child>
+                <child>
+                    <object class="GtkButton" id="todo_button"> 
+                        <signal name="clicked" handler="todo_clicked" swapped="false"/>
+                        <property name="label">To-Do</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
                         </object>
                     </child>
                 </object>

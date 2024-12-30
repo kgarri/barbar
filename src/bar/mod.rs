@@ -1,8 +1,7 @@
 mod imp;
 
-use gtk::gdk::Monitor;
 use gtk::glib::Object;
-use gtk::prelude::{CastNone, DisplayExt, GtkWindowExt, ListModelExtManual, WidgetExt};
+use gtk::prelude::{GtkWindowExt, WidgetExt};
 use gtk::{gio, glib, Align, Application };
 use gtk4_layer_shell::{LayerShell,Layer,Edge};
 

@@ -11,7 +11,7 @@ use crate::task_list::{TaskObject, TaskData};
 use crate::utils::data_path;
 
 #[derive(CompositeTemplate, Default)]
-#[template(resource = "/org/gtk_rs/Todo/todo_window.ui")]
+#[template(resource = "/org/gtk_rs/bar/todo_window.ui")]
 pub struct Window {
     #[template_child]
     pub entry: TemplateChild<Entry>,
@@ -70,7 +70,7 @@ impl WindowImpl for Window {
             .map(|task_object| task_object.task_data())
             .collect(); 
 
-        let file = File::create(data_path()).expect("Could not create json file.");
+        let file = File::create(data_path("org.gtk_rs.Todo")).expect("Could not create json file.");
         serde_json::to_writer(file, &backup_data).expect("Could not write data to json file"); 
 
         self.parent_close_request()

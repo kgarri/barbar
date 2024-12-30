@@ -2,5 +2,7 @@
 <gresources>
     <gresource prefix="/org/gtk_rs/bar/">
         <file compressed="true" preprocess="xml-stripblanks">bar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">task_row.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">todo_window.ui</file>
         </gresource>
     </gresources>

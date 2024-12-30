@@ -1,12 +1,16 @@
 use gtk::glib::subclass::InitializingObject;
-use gtk::{gio,glib, CompositeTemplate, Label};
+use gtk::{glib, Button, CompositeTemplate, Label};
 use gtk::subclass::prelude::*;
+
+use crate::start_todo;
 
 #[derive(CompositeTemplate, Default)]
 #[template(resource = "/org/gtk_rs/bar/bar.ui")]
 pub struct Bar {
     #[template_child]
     pub label: TemplateChild<Label>,
+    #[template_child]
+    pub todo_button: TemplateChild<Button>,
 }
 
 
@@ -19,10 +23,19 @@ impl ObjectSubclass for Bar {
 
     fn class_init(klass: &mut Self::Class) {
         klass.bind_template();
+        klass.bind_template_callbacks();
     }
 
     fn instance_init(obj: &InitializingObject<Self>) {
         obj.init_template();
+    }
+}
+
+#[gtk::template_callbacks]
+impl Bar {
+    #[template_callback]
+    fn todo_clicked(_button: &Button) {
+        start_todo();
     }
 }
 

@@ -7,7 +7,7 @@ use gtk::CompositeTemplate;
 use gtk::{Label, CheckButton};
 
 #[derive(CompositeTemplate,Default)]
-#[template(resource = "/org/gtk_rs/Todo/task_row.ui")]
+#[template(resource = "/org/gtk_rs/bar/task_row.ui")]
 pub struct TaskRow {
     #[template_child]
     pub completed_button: TemplateChild<CheckButton>, 

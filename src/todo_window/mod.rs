@@ -188,7 +188,7 @@ impl Window {
 
 
     fn restore_data(&self) {
-        if let Ok(file) = std::fs::File::open(data_path()) {
+        if let Ok(file) = std::fs::File::open(data_path("org.gtk_rs.Todo")) {
             let backup_data:Vec<TaskData> = serde_json::from_reader(file).expect(
                 "It Should be possible to read `backup_data` from the json file.",);
             

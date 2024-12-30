@@ -11,12 +11,11 @@ use gtk::prelude::*;
 use gtk::{glib, Application};
 use gtk::gio; 
 use gtk4_layer_shell::LayerShell;
-use todo_window::Window;
 
 use self::bar::Bar;
 
 
-const APP_ID: &str = "org.gtk_rs.Todo";
+const APP_ID: &str = "org.gtk_rs.Bar";
 
 fn main() -> glib::ExitCode {
     gio::resources_register_include!("todo.gresource")
@@ -24,12 +23,12 @@ fn main() -> glib::ExitCode {
 
     let app = Application::builder().application_id(APP_ID).build();
 
-    app.connect_activate(build_ui);
+    app.connect_activate(build_bar_ui);
 
     app.run() 
 }
 
-fn build_ui(app: &Application) {
+fn build_bar_ui(app: &Application) {
         let display = gtk::gdk::Display::default().expect("Could not find a Display."); 
         let monitors = display.monitors();
         for monitor in &monitors {
@@ -39,6 +38,24 @@ fn build_ui(app: &Application) {
             window.present();
         }
 } 
+
+fn start_todo() -> glib::ExitCode {
+    let app_id: &str = "org.gtk_rs.Todo";
+    let app = Application::builder().application_id(app_id).build();
+    
+    app.connect_startup(setup_shortcuts);
+    app.connect_activate(build_todo_ui);
+    
+
+    app.run()
+}
+
+fn build_todo_ui(app: &Application) {
+    let window = todo_window::Window::new(app); 
+
+    window.present();
+}
+
 
 fn setup_shortcuts(app: &Application) {
     app.set_accels_for_action("win.filter('All')", &["<Ctrl>a"]);
